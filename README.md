@@ -67,6 +67,16 @@ poetry run get-papers-list "cancer immunotherapy" -f results.csv --debug
   - Company Affiliation(s)
   - Corresponding Author Email
 
+## Author Affiliation Filtering
+
+To identify non-academic (pharma/biotech) authors, the tool uses keyword-based filtering:
+
+- **Excludes** affiliations containing academic terms like `university`, `hospital`, `institute`, etc.
+- **Includes** affiliations with industry terms like `pharma`, `biotech`, `therapeutics`, `inc`, `ltd`, etc.
+
+Only papers with at least one non-academic author are included in the output.
+
+
 ## Why Not Scrape Publisher Sites or Google Scholar for Emails?
 - Scraping publisher websites or Google Scholar for author emails is not recommended for several reasons:
   - **Legal and Ethical Issues:** Most publishers and Google Scholar prohibit automated scraping in their terms of service. Violating these terms can result in IP bans or legal action.
