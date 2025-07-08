@@ -106,6 +106,8 @@ Only papers with at least one non-academic author are included in the output.
 - [Pandas](https://pandas.pydata.org/) for CSV output
 - [lxml](https://lxml.de/) and [xml.etree.ElementTree](https://docs.python.org/3/library/xml.etree.elementtree.html) for XML parsing
 - [scholarly](https://github.com/scholarly-python-package/scholarly) and [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/) (optional, for advanced email extraction)
+- [OpenAI GPT-4.1](https://openai.com/) for assisted code generation and refinement
+
 
 ## Notes
 
