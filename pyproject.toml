@@ -1,0 +1,31 @@
+[project]
+name = "pubmed-authorscan"
+version = "0.1.0"
+description = "Fetch PubMed papers with pharma/biotech authors and output as CSV. PubMedAuthorScan is a professional tool for industry-focused literature mining."
+authors = [
+    {name = "Altar Ravi",email = "altarravi@gmail.com"}
+]
+readme = "README.md"
+requires-python = "^3.9"
+dependencies = [
+    "requests (>=2.32.4,<3.0.0)",
+    "lxml (>=6.0.0,<7.0.0)",
+    "pandas (>=2.3.1,<3.0.0)",
+    "typer (>=0.16.0,<0.17.0)",
+    "rich (>=14.0.0,<15.0.0)",
+    "tqdm (>=4.67.1,<5.0.0)",
+    "scholarly (>=1.7.11,<2.0.0)",
+    "beautifulsoup4 (>=4.13.4,<5.0.0)"
+]
+
+[tool.poetry]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.1"
+
+[tool.poetry.scripts]
+get-papers-list = "pubmed_authorscan.cli:main"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
