@@ -110,6 +110,19 @@ Only papers with at least one non-academic author are included in the output.
 - [scholarly](https://github.com/scholarly-python-package/scholarly) and [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/) (optional, for advanced email extraction)
 - [OpenAI GPT-4.1](https://openai.com/) for assisted code generation and refinement
 
+## Installing from TestPyPI
+
+This package is published to [TestPyPI](https://test.pypi.org/project/pubmed-authorscan/0.1.0/) for evaluation.
+
+**Install from TestPyPI**   
+- Use the following command in a clean virtual environment:
+```bash
+pip install --index-url https://test.pypi.org/simple/ pubmed-authorscan==0.1.0
+```
+- This installs the package from **TestPyPI**, which is a separate package index from PyPI.
+- Avoid mixing packages from both indexes unless you're isolating with tools like `venv` or `Poetry`.
+
+
 
 ## Notes
 

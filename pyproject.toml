@@ -6,7 +6,9 @@ authors = [
     {name = "Altar Ravi",email = "altarravi@gmail.com"}
 ]
 readme = "README.md"
-requires-python = "^3.9"
+#requires-python = "^3.9"
+requires-python = ">=3.9"
+
 dependencies = [
     "requests (>=2.32.4,<3.0.0)",
     "lxml (>=6.0.0,<7.0.0)",
