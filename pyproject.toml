@@ -1,7 +1,7 @@
 [project]
 name = "pubmed-authorscan"
 version = "0.1.0"
-description = "Fetch PubMed papers with pharma/biotech authors and output as CSV. PubMedAuthorScan is a professional tool for industry-focused literature mining."
+description = "Fetch PubMed papers with pharma/biotech authors and output as CSV. PubMedAuthorScan is a tool for industry-focused literature mining."
 authors = [
     {name = "Altar Ravi",email = "altarravi@gmail.com"}
 ]
