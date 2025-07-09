@@ -105,6 +105,8 @@ Only papers with at least one non-academic author are included in the output.
 - [Requests](https://docs.python-requests.org/) for HTTP requests
 - [Pandas](https://pandas.pydata.org/) for CSV output
 - [lxml](https://lxml.de/) and [xml.etree.ElementTree](https://docs.python.org/3/library/xml.etree.elementtree.html) for XML parsing
+- [Rich](https://rich.readthedocs.io/) for elegant terminal formatting, including colored output, tables, and better logging
+- [tqdm](https://tqdm.github.io/) for progress bars during article processing, providing real-time feedback for long-running tasks
 - [scholarly](https://github.com/scholarly-python-package/scholarly) and [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/) (optional, for advanced email extraction)
 - [OpenAI GPT-4.1](https://openai.com/) for assisted code generation and refinement
 

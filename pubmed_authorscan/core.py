@@ -36,28 +36,6 @@ def is_non_academic_affiliation(affil: Optional[str]) -> bool:
         return True
     return False
 
-def fetch_pubmed_ids(query: str, retmax: int = 100) -> List[str]:
-    """
-    Fetch PubMed IDs for a given query using the ESearch API.
-    - query: PubMed search query string.
-    - retmax: Maximum number of IDs to return.
-    Returns a list of PubMed IDs as strings.
-    """
-    params = {
-        "db": "pubmed",
-        "term": query,
-        "retmax": retmax,
-        "retmode": "json"
-    }
-    resp = requests.get(PUBMED_ESEARCH_URL, params=params)
-    resp.raise_for_status()
-
-    # 🕒 Throttle after ESearch request to avoid hitting limits
-    time.sleep(THROTTLE_SECONDS)
-
-    data = resp.json()
-    return data["esearchresult"]["idlist"]
-
 def fetch_pubmed_details(pubmed_ids: List[str]) -> List[Dict]:
     """
     Fetch details for a list of PubMed IDs using the EFetch API.
@@ -91,6 +69,118 @@ def fetch_pubmed_details(pubmed_ids: List[str]) -> List[Dict]:
                 results.append(result)
 
     return results
+
+
+# def fetch_pubmed_ids(query: str, retmax: int = 100) -> List[str]:
+#     """
+#     Fetch all PubMed IDs for a given query using the ESearch API.
+#     Handles pagination to retrieve all matching IDs.
+#
+#     - query: PubMed search query string.
+#     - retmax: Number of results to fetch per request (batch size).
+#     Returns a list of all matching PubMed IDs as strings.
+#     """
+#     all_ids = []
+#     retstart = 0
+#
+#     while True:
+#         params = {
+#             "db": "pubmed",
+#             "term": query,
+#             "retmax": retmax,
+#             "retstart": retstart,
+#             "retmode": "json"
+#         }
+#         resp = requests.get(PUBMED_ESEARCH_URL, params=params)
+#         resp.raise_for_status()
+#
+#         time.sleep(THROTTLE_SECONDS)  # Avoid rate-limiting
+#
+#         data = resp.json()
+#         ids = data["esearchresult"].get("idlist", [])
+#         all_ids.extend(ids)
+#
+#         total = int(data["esearchresult"]["count"])
+#         retstart += retmax
+#
+#         if retstart >= total:
+#             break
+#
+#     return all_ids
+
+
+# def fetch_pubmed_ids(query: str, retmax: int = 100) -> List[str]:
+#     """
+#     Fetch PubMed IDs for a given query using the ESearch API.
+#     - query: PubMed search query string.
+#     - retmax: Maximum number of IDs to return.
+#     Returns a list of PubMed IDs as strings.
+#     """
+#     params = {
+#         "db": "pubmed",
+#         "term": query,
+#         "retmax": retmax,
+#         "retmode": "json"
+#     }
+#     resp = requests.get(PUBMED_ESEARCH_URL, params=params)
+#     resp.raise_for_status()
+#
+#     # 🕒 Throttle after ESearch request to avoid hitting limits
+#     time.sleep(THROTTLE_SECONDS)
+#
+#     data = resp.json()
+#     return data["esearchresult"]["idlist"]
+
+def fetch_pubmed_ids(query: str, retmax: int = 100) -> List[str]:
+    """
+    Fetch all PubMed IDs for a given query using the ESearch API.
+    Handles pagination to retrieve all matching IDs.
+
+    - query: PubMed search query string.
+    - retmax: Number of results to fetch per request (batch size).
+    Returns a list of all matching PubMed IDs as strings.
+    """
+    # Clean up query input to avoid invalid characters
+    query = query.strip().replace("\n", " ").replace("\t", " ")
+
+    all_ids = []
+    retstart = 0
+    total = None  # Will store total result count once known
+
+    while True:
+        params = {
+            "db": "pubmed",
+            "term": query,
+            "retmax": retmax,
+            "retstart": retstart,
+            "retmode": "json"
+        }
+        resp = requests.get(PUBMED_ESEARCH_URL, params=params)
+        resp.raise_for_status()
+
+        time.sleep(THROTTLE_SECONDS)  # Avoid rate-limiting
+
+        try:
+            data = resp.json()
+        except ValueError as e:
+            print("[ERROR] Failed to parse JSON from ESearch API.")
+            print("[DEBUG] Raw response:\n", repr(resp.text))
+            raise e
+
+        # Get total count once
+        if total is None:
+            total = int(data["esearchresult"]["count"])
+            print(f"[INFO] Total results found: {total}")
+
+        ids = data["esearchresult"].get("idlist", [])
+        all_ids.extend(ids)
+
+        retstart += retmax
+        if retstart >= total:
+            break
+
+    return all_ids
+
 
 def get_doi_from_pubmed_xml(article: ET.Element) -> Optional[str]:
     """
@@ -189,13 +279,22 @@ def parse_pubmed_article(article: ET.Element) -> Optional[Dict]:
     article_info = medline.find("Article") if medline is not None else None
     if article_info is None:
         return None
+
     pmid = medline.findtext("PMID")
-    title = article_info.findtext("ArticleTitle")
+
+    # ✅ FIXED: Robust extraction of full article title
+    title_elem = article_info.find("ArticleTitle")
+    if title_elem is not None:
+        title = ''.join(title_elem.itertext()).strip()
+    else:
+        title = ""
+
     pub_date = extract_pub_date(article_info)
     authors = article_info.find("AuthorList")
     non_acad_authors = []
     company_affils = []
     possible_emails = []
+
     if authors is not None:
         for author in authors.findall("Author"):
             affils = [affil.text for affil in author.findall("AffiliationInfo/Affiliation") if affil.text]
@@ -221,8 +320,10 @@ def parse_pubmed_article(article: ET.Element) -> Optional[Dict]:
                             possible_emails.insert(0, email)
                         else:
                             possible_emails.append(email)
+
     if not non_acad_authors:
         return None
+
     corresponding_email = None
     if possible_emails:
         corresponding_email = possible_emails[0]
@@ -238,6 +339,7 @@ def parse_pubmed_article(article: ET.Element) -> Optional[Dict]:
         if not corresponding_email and pmid:
             corresponding_email = get_email_from_europepmc_emails_endpoint(pmid)
             time.sleep(0.2)
+
     return {
         "PubmedID": pmid,
         "Title": title,
@@ -246,6 +348,7 @@ def parse_pubmed_article(article: ET.Element) -> Optional[Dict]:
         "Company Affiliation(s)": "; ".join(company_affils),
         "Corresponding Author Email": corresponding_email or ""
     }
+
 
 def extract_pub_date(article_info: ET.Element) -> str:
     """
