@@ -140,7 +140,7 @@ poetry publish --build --repository testpypi -u __token__ -p your-testpypi-token
 
 ## Installing from TestPyPI
 
-This package is published to [TestPyPI](https://test.pypi.org/project/pubmed-authorscan/0.1.0/) for evaluation.
+This package is published to [TestPyPI](https://test.pypi.org/project/pubmed-authorscan/0.1.1/) for evaluation.
 
 **Install from TestPyPI**   
 - Use the following command in a clean virtual environment:
