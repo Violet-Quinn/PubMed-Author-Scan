@@ -110,6 +110,34 @@ Only papers with at least one non-academic author are included in the output.
 - [scholarly](https://github.com/scholarly-python-package/scholarly) and [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/) (optional, for advanced email extraction)
 - [OpenAI GPT-4.1](https://openai.com/) for assisted code generation and refinement
 
+## 📤 Publishing to TestPyPI
+
+To test your package before releasing it to the public PyPI, you can publish it to [TestPyPI](https://test.pypi.org/).
+
+### Step-by-step Instructions:
+1. **Build the package**
+Inside the project root (same level as `pyproject.toml`), run:
+```bash
+poetry build
+```
+This will generate distribution files in the `dist/` folder:
+- `pubmed-authorscan-0.1.0.tar.gz`
+- `pubmed_authorscan-0.1.0-py3-none-any.whl`
+2. **Publish to TestPyPI**
+If you haven't set credentials yet, you can configure them:
+```bash
+poetry config repositories.testpypi https://test.pypi.org/legacy/
+poetry config pypi-token.testpypi your-testpypi-token-here
+```
+Or publish interactively (you will be prompted for username/password):
+```bash
+poetry publish --build --repository testpypi
+```
+You can also pass credentials inline:
+```bash
+poetry publish --build --repository testpypi -u __token__ -p your-testpypi-token
+```
+
 ## Installing from TestPyPI
 
 This package is published to [TestPyPI](https://test.pypi.org/project/pubmed-authorscan/0.1.0/) for evaluation.
